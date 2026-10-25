@@ -65,7 +65,7 @@ def layout(title, body, desc, path, canonical=None, extra_head=''):
 <footer class="foot"><div class="wrap foot-grid">
 <div><a class="brand brand-foot" href="/"><img src="/assets/img/mark.svg" width="38" height="38" alt=""><span><b>Florida Condo &amp; HOA</b><em>Brief</em></span></a>
 <p>Published by <a href="{C['publisher_url']}">{E(C['publisher'])}</a>. Informational, not legal advice.</p></div>
-<div><h4>Read</h4><ul><li><a href="/issues/">All issues</a></li><li><a href="/feed.xml">RSS feed</a></li><li><a href="/subscribe/">Subscribe free</a></li></ul></div>
+<div><h4>Read</h4><ul><li><a href="/issues/">All issues</a></li><li><a href="/feed.xml">RSS feed</a></li><li><a href="/subscribe/">Subscribe free</a></li><li><a href="/app/">Get the app</a></li></ul></div>
 <div><h4>About</h4><ul><li><a href="/about/">About &amp; standards</a></li><li><a href="/sponsor/">Sponsor ({E(C['sponsor_price'])})</a></li></ul></div>
 <div><h4>Contact</h4><ul><li>Editor: <a href="mailto:{C['editor_email']}">{C['editor_email']}</a></li><li>Advertising: <a href="mailto:{C['advertise_email']}">{C['advertise_email']}</a></li></ul></div>
 </div><div class="wrap copy">© {datetime.date.today().year} {E(C['publisher'])}</div></footer></body></html>'''
@@ -76,6 +76,13 @@ def cover(i, size='lg'):
 
 def subscribe_block(head='Get the Brief free in your inbox', text='Plain-English Florida condo and HOA law, with a link to the source for every fact.'):
     return f'<aside class="sub"><div><h3>{head}</h3><p>{text}</p></div><a class="btn btn-lg" href="/subscribe/">Subscribe free →</a></aside>'
+
+def app_block():
+    def badge(store, url):
+        if url: return f'<a class="app-badge" href="{url}" rel="noopener">Download on {store}</a>'
+        return f'<span class="app-badge soon" aria-label="{store}: coming soon">{store} · Coming soon</span>'
+    return f'''<aside class="app-dl" id="app"><div><h3>Get the Condo &amp; HOA Brief app</h3><p>Every issue on your phone, readable offline, free. iPhone and Android.</p></div>
+<div class="app-badges">{badge("App Store", C.get("app_store_url",""))}{badge("Google Play", C.get("play_store_url",""))}</div></aside>'''
 
 def write(path, s):
     p = ROOT/path.lstrip('/'); p.parent.mkdir(parents=True, exist_ok=True); p.write_text(s)
@@ -125,6 +132,7 @@ home = f'''<section class="lead wrap">
 <section class="wrap"><div class="sec-head"><h2 class="sec-label">Top stories</h2><a href="{L["url"]}">Full issue →</a></div><div class="recent">{more}</div></section>
 <section class="wrap"><div class="sec-head"><h2 class="sec-label">Topics we cover</h2><a href="/issues/">All issues →</a></div><div class="topics">{topics}</div></section>
 <section class="wrap">{subscribe_block()}</section>
+<section class="wrap">{app_block()}</section>
 <section class="wrap"><div class="sec-head"><h2 class="sec-label">Recent issues</h2><a href="/issues/">Archive →</a></div>{f'<div class="recent">{recent}</div>' if recent else f'<p class="src-note">Issue #{L["number"]} is our first. New issues will be listed here and in the <a href="/issues/">archive</a>.</p>'}</section>'''
 write('index.html', layout(f"{C['site_name']}: {C['tagline']}", home, 'A free newsletter explaining Florida condo and HOA laws, rules and deadlines in plain English, with links to the original sources.', '/'))
 
@@ -157,6 +165,10 @@ items = ''.join(f'''<item><title>{E(i["title"])}</title><link>{C["site_url"]}{i[
 write('feed.xml', f'''<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>{E(C["site_name"])}</title><link>{C["site_url"]}/</link><atom:link href="{C["site_url"]}/feed.xml" rel="self" type="application/rss+xml"/><description>{E(C["tagline"])}</description><language>en-us</language>{items}</channel></rss>
 ''')
-urls = ['/', '/issues/', '/about/', '/sponsor/', '/subscribe/'] + [i['url'] for i in ISSUES]
+urls = ['/', '/issues/', '/about/', '/sponsor/', '/subscribe/', '/app/'] + [i['url'] for i in ISSUES]
 write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + ''.join(f'<url><loc>{C["site_url"]}{u}</loc></url>' for u in urls) + '</urlset>\n')
 print(f'built {len(ISSUES)} issue(s)')
+
+# App download page
+write('app/index.html', layout(f"Get the app | {C['site_name']}", f'''<section class="page-head"><div class="wrap"><p class="kicker">Mobile app</p><h1>The Brief on your phone</h1><p class="dek">Read every issue, save it for offline reading and share it with your board. Free on iPhone and Android.</p></div></section>
+<section class="wrap">{app_block()}</section><section class="wrap">{subscribe_block()}</section>''', 'Get the free Florida Condo & HOA Brief app for iPhone and Android.', '/app/'))
