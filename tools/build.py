@@ -67,7 +67,7 @@ def layout(title, body, desc, path, canonical=None, extra_head=''):
 <p>Published by <a href="{C['publisher_url']}">{E(C['publisher'])}</a>. Informational, not legal advice.</p></div>
 <div><h4>Read</h4><ul><li><a href="/issues/">All issues</a></li><li><a href="/feed.xml">RSS feed</a></li><li><a href="/subscribe/">Subscribe free</a></li></ul></div>
 <div><h4>About</h4><ul><li><a href="/about/">About &amp; standards</a></li><li><a href="/sponsor/">Sponsor ({E(C['sponsor_price'])})</a></li></ul></div>
-<div><h4>Contact</h4><ul><li>Editor: <a href="mailto:{C['editor_email']}">{C['editor_email']}</a></li><li>Advertising: <a href="mailto:{C['advertise_email']}">{C['advertise_email']}</a></li></ul></div>
+<div><h4>Contact</h4><ul><li>Editor: <a href="mailto:{C['editor_email']}">{C['editor_email']}</a></li><li>Advertising: <a href="mailto:{C['advertise_email']}">{C['advertise_email']}</a></li><li><a href="{C['linkedin_url']}" target="_blank" rel="noopener">LinkedIn</a></li></ul></div>
 </div><div class="wrap copy">© {datetime.date.today().year} {E(C['publisher'])}</div></footer></body></html>'''
 
 def cover(i, size='lg'):
