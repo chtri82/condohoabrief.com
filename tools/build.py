@@ -85,7 +85,7 @@ for i in ISSUES:
     raw = (ROOT/'content/issues'/f"{i['slug']}.html").read_text()
     bodies[i['slug']] = clean(raw, i['slug'])
     i['heads'] = headings(bodies[i['slug']])
-    i['url'] = f"/issues/{i['slug']}/"
+    i['url'] = f"/p/{i['slug']}/"
 
 # Issue pages
 for n, i in enumerate(ISSUES):
@@ -98,7 +98,15 @@ for n, i in enumerate(ISSUES):
 <div class="issue-grid"><div class="prose">{bodies[i["slug"]]}</div>
 <aside class="issue-side"><div class="toc"><h4>In this issue</h4><ol>{toc}</ol></div>{subscribe_block("Get the next issue", "Free. Unsubscribe anytime.")}</aside></div>
 <nav class="prevnext">{pn}</nav></article>'''
-    write(f"issues/{i['slug']}/index.html", layout(f"{i['title']} | {C['site_name']}", body, i['subtitle'], i['url']))
+    ld = json.dumps({"@context": "https://schema.org", "@type": "NewsArticle", "headline": i['title'], "description": i['subtitle'],
+        "datePublished": i['date'], "dateModified": i.get('updated', i['date']), "author": {"@type": "Person", "name": i['author']},
+        "publisher": {"@type": "Organization", "name": "Launchpad Digital L.L.C.", "url": C['site_url']},
+        "mainEntityOfPage": C['site_url'] + i['url'], "isPartOf": {"@type": "Periodical", "name": C['site_name']}}).replace('</', '<\\/')
+    xh = f'<meta property="og:type" content="article"><meta property="article:published_time" content="{i["date"]}"><script type="application/ld+json">{ld}</script>'
+    write(f"p/{i['slug']}/index.html", layout(f"{i['title']} | {C['site_name']}", body, i['subtitle'], i['url'], extra_head=xh))
+    # Old /issues/<slug>/ address forwards to the canonical /p/<slug>/ page
+    full = C['site_url'] + i['url']
+    write(f"issues/{i['slug']}/index.html", f'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>{E(i["title"])}</title><link rel="canonical" href="{full}"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0; url={i["url"]}"></head><body><p>This issue moved to <a href="{i["url"]}">{full}</a>.</p></body></html>\n')
 
 # Archive
 cards = ''.join(f'''<article class="arch-item"><a href="{i["url"]}">{cover(i,"sm")}</a><div><p class="kicker">Issue #{i["number"]} · <time datetime="{i["date"]}">{nice(i)}</time></p>
@@ -160,3 +168,5 @@ write('feed.xml', f'''<?xml version="1.0" encoding="UTF-8"?>
 urls = ['/', '/issues/', '/about/', '/sponsor/', '/subscribe/'] + [i['url'] for i in ISSUES]
 write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + ''.join(f'<url><loc>{C["site_url"]}{u}</loc></url>' for u in urls) + '</urlset>\n')
 print(f'built {len(ISSUES)} issue(s)')
+
+write('robots.txt', f"User-agent: *\nAllow: /\nSitemap: {C['site_url']}/sitemap.xml\n")
