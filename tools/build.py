@@ -68,14 +68,20 @@ def layout(title, body, desc, path, canonical=None, extra_head=''):
 <div><h4>Read</h4><ul><li><a href="/issues/">All issues</a></li><li><a href="/feed.xml">RSS feed</a></li><li><a href="/subscribe/">Subscribe free</a></li></ul></div>
 <div><h4>About</h4><ul><li><a href="/about/">About &amp; standards</a></li><li><a href="/sponsor/">Sponsor ({E(C['sponsor_price'])})</a></li></ul></div>
 <div><h4>Contact</h4><ul><li>Editor: <a href="mailto:{C['editor_email']}">{C['editor_email']}</a></li><li>Advertising: <a href="mailto:{C['advertise_email']}">{C['advertise_email']}</a></li><li><a href="{C['linkedin_url']}" target="_blank" rel="noopener">LinkedIn</a></li></ul></div>
-</div><div class="wrap copy">© {datetime.date.today().year} {E(C['publisher'])}</div></footer></body></html>'''
+</div><div class="wrap copy">© {datetime.date.today().year} {E(C['publisher'])}</div></footer><script src="/assets/signup.js" defer></script></body></html>'''
 
 def cover(i, size='lg'):
     if i.get('thumbnail'): return f'<img class="cover-img" src="{i["thumbnail"]}" alt="">'
     return f'<div class="cover cover-{size}" aria-hidden="true"><span class="cover-no">Issue #{i["number"]}</span><span class="cover-fl"></span><span class="cover-date">{nice(i)}</span></div>'
 
-def subscribe_block(head='Get the Brief free in your inbox', text='Plain-English Florida condo and HOA law, with a link to the source for every fact.'):
-    return f'<aside class="sub"><div><h3>{head}</h3><p>{text}</p></div><a class="btn btn-lg" href="/subscribe/">Subscribe free →</a></aside>'
+def signup_form(source, label='Subscribe free →'):
+    """Signup form -> worker (Brevo double opt-in). Hidden 'website' field is a honeypot."""
+    return (f'<form class="sub-form" method="post" action="{C["email"]["signup_api"]}"><input type="hidden" name="source" value="{E(source)}">'
+            f'<label class="skip" for="e-{E(source)}">Email address</label><input id="e-{E(source)}" type="email" name="email" placeholder="you@example.com" required autocomplete="email">'
+            f'<input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true"><button class="btn btn-lg" type="submit">{label}</button></form>')
+
+def subscribe_block(head='Get the Brief free in your inbox', text='Plain-English Florida condo and HOA law, with a link to the source for every fact.', source='site'):
+    return f'<aside class="sub"><div><h3>{head}</h3><p>{text}</p></div><div class="sub-side">{signup_form(source)}<p class="sub-fine">Free. We email a confirmation link first. Unsubscribe anytime.</p></div></aside>'
 
 def write(path, s):
     p = ROOT/path.lstrip('/'); p.parent.mkdir(parents=True, exist_ok=True); p.write_text(s)
@@ -155,10 +161,9 @@ write('sponsor/index.html', layout(f"Sponsor | {C['site_name']}", f'''<section c
 <section class="wrap prose narrow"><p class="price"><b>{E(C['sponsor_price'])}</b></p><p>Each issue carries one clearly labeled "Florida sponsor" message, kept separate from our coverage. Sponsors have no say over what we report.</p>
 <p><a class="btn btn-lg" href="mailto:{C['advertise_email']}?subject=Sponsoring%20the%20Florida%20Condo%20%26%20HOA%20Brief">Email {C['advertise_email']}</a></p></section>''', 'Sponsor the Florida Condo & HOA Brief.', '/sponsor/'))
 
-# Subscribe: the ONE place the signup URL is used (config.json -> subscribe_url)
+# Subscribe page: form posts to the signup worker; ?status=check-email|confirmed|error is shown by assets/signup.js
 write('subscribe/index.html', layout(f"Subscribe | {C['site_name']}", f'''<section class="page-head"><div class="wrap"><p class="kicker">Subscribe</p><h1>Get the Brief free</h1><p class="dek">Plain-English Florida condo and HOA law, with a link to the source for every fact. Unsubscribe anytime.</p>
-<p><a class="btn btn-lg" href="{C['subscribe_url']}" rel="noopener">Continue to signup →</a></p><p class="src-note">You'll be taken to our signup form.</p></div></section>''', 'Subscribe free to the Florida Condo & HOA Brief.', '/subscribe/',
-    extra_head=f'<meta http-equiv="refresh" content="2;url={C["subscribe_url"]}">'))
+<p id="sub-status" class="sub-msg" role="status" hidden></p>{signup_form('subscribe-page')}<p class="src-note">We'll email a confirmation link first. We never sell your address. Published by {E(C['publisher'])}.</p></div></section>''', 'Subscribe free to the Florida Condo & HOA Brief.', '/subscribe/'))
 
 # RSS
 items = ''.join(f'''<item><title>{E(i["title"])}</title><link>{C["site_url"]}{i["url"]}</link><guid isPermaLink="true">{C["site_url"]}{i["url"]}</guid><pubDate>{format_datetime(dt(i))}</pubDate><description>{E(i["subtitle"])}</description><content:encoded><![CDATA[{bodies[i["slug"]].replace('href="/', f'href="{C["site_url"]}/').replace('src="/', f'src="{C["site_url"]}/')}]]></content:encoded></item>''' for i in ISSUES)

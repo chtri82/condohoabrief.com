@@ -63,3 +63,9 @@ h1,h2,h3{font-family:var(--serif);color:var(--navy);line-height:1.15}h1 a,h2 a,h
 nav ul{display:none;position:absolute;left:0;right:0;top:100%;background:#fff;flex-direction:column;align-items:flex-start;padding:1rem 1.25rem;border-bottom:3px solid var(--navy)}nav ul.open{display:flex}
 .topics,.recent{grid-template-columns:1fr}.arch-item{grid-template-columns:1fr}.prose{padding:1.1rem 1.1rem;font-size:1.03rem}.topbar span+span{display:none}.brand em{font-size:1.3rem}.brand b{font-size:.92rem}}
 .card-story{background:var(--paper);border-radius:var(--r);padding:1.2rem 1.3rem;box-shadow:0 3px 12px rgba(0,0,0,.04);display:flex;flex-direction:column}.card-story h3{margin:.1rem 0 .5rem;font-size:1.35rem}.card-story p{color:var(--muted);font-size:.95rem;margin:0 0 .8rem;flex:1}.card-story .more{font-weight:700;text-decoration:none;font-size:.9rem}
+.sub-form{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}.sub-form input[type=email]{font:inherit;padding:.7rem 1rem;border-radius:999px;border:2px solid transparent;min-width:15rem;flex:1}
+.sub-form input[type=email]:focus{outline:none;border-color:var(--gold)}.sub-form .hp{position:absolute;left:-9999px;height:0;width:0;opacity:0}
+.sub-msg{margin:.6rem 0 0;font-weight:600}.sub .sub-msg{color:#fff}.sub-msg.ok{color:#8FE3C0}.sub-msg.err{color:#FFB4A8}
+.page-head .sub-msg.ok{color:var(--teal)}.page-head .sub-msg.err{color:#B3261E}.sub-fine{font-size:.85rem;margin-top:.5rem}
+.sub-side{min-width:min(26rem,100%);flex:1}
+.page-head .sub-form{max-width:36rem}.page-head .sub-form input[type=email]{border-color:var(--line);background:#fff}

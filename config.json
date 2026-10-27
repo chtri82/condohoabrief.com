@@ -2,11 +2,21 @@
   "site_name": "Florida Condo & HOA Brief",
   "site_url": "https://condohoabrief.com",
   "tagline": "Florida condo and HOA law, explained from the source.",
-  "subscribe_url": "https://charlies-newsletter-65a13d.beehiiv.com/subscribe",
+  "subscribe_url": "/subscribe/",
   "editor_email": "editor@condohoabrief.com",
   "advertise_email": "advertise@launchpaddigitalfl.com",
   "sponsor_price": "$5 per issue",
   "publisher": "Launchpad Digital L.L.C.",
   "publisher_url": "https://launchpaddigitalfl.com",
-  "linkedin_url": "https://www.linkedin.com/company/condohoabrief/"
+  "linkedin_url": "https://www.linkedin.com/company/condohoabrief/",
+  "email": {
+    "brevo_list_id": 3,
+    "brevo_doi_template_id": 2,
+    "sender_name": "Florida Condo & HOA Brief",
+    "sender_email": "editor@condohoabrief.com",
+    "fallback_sender_email": "Editor@launchpaddigitalfl.com",
+    "reply_to": "editor@condohoabrief.com",
+    "postal_address": "2173 Tarrytown Ln, Palm Bay, FL 32905",
+    "signup_api": "https://lp-newsletter.launchpaddigitalfl.workers.dev/api/subscribe-brief"
+  }
 }
