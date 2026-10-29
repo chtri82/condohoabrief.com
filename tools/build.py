@@ -162,7 +162,7 @@ write('index.html', layout(f"{C['site_name']}: {C['tagline']}", home, 'A free ne
 # About / standards
 write('about/index.html', layout(f"About | {C['site_name']}", f'''<section class="page-head"><div class="wrap"><p class="kicker">About</p><h1>About the Brief</h1><p class="dek">What changed, what's due, and how owners, board members and managers can take part in their communities, for condos (Chapter 718) and HOAs (Chapter 720) alike.</p></div></section>
 <section class="wrap prose narrow"><h2>Our standards</h2><ul>
-<li>Facts first. We report what the law, the records and officials say, and we cite them.</li>
+<li>Facts first. We report what the law, the records and what officials say, and we cite them.</li>
 <li>Objective. We present the facts and the authorities' statements and let readers draw their own conclusions.</li>
 <li>We are nonpartisan, take no position on legislation, and endorse no candidates.</li>
 <li>No invented numbers. If we can't source it, we don't print it.</li>
