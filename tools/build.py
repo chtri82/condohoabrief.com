@@ -45,6 +45,16 @@ def excerpts(h):
     return out
 
 NAV = [('Home', '/'), ('Issues', '/issues/'), ('About', '/about/'), ('Sponsor', '/sponsor/')]
+_SOC=[('https://www.facebook.com/profile.php?id=61595986042172','fb','Florida Condo &amp; HOA Brief on Facebook'),
+('https://www.linkedin.com/company/146762968/','li','Florida Condo &amp; HOA Brief on LinkedIn'),
+('https://www.facebook.com/profile.php?id=61595796481980','fb','Launchpad Digital on Facebook'),
+('https://x.com/LaunchpadFLNews','x','Launchpad Digital on X (@LaunchpadFLNews)'),
+('https://www.linkedin.com/company/146881328/','li','Launchpad Digital on LinkedIn')]
+_ICO={'fb':'<path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.5c-1.5 0-1.96.93-1.96 1.89v2.26h3.32l-.53 3.5h-2.8V24C19.62 23.1 24 18.1 24 12.07z"/>',
+'x':'<path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.63 7.58H.48l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93zm-1.29 19.5h2.04L6.48 3.24H4.3l13.31 17.41z"/>',
+'li':'<path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/>'}
+SOCIAL=''.join(f'<li><a href="{u}" target="_blank" rel="noopener" aria-label="{t.replace("&amp;","&")} (opens in a new tab)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">{_ICO[k]}</svg> {t}</a></li>' for u,k,t in _SOC)
+
 def layout(title, body, desc, path, canonical=None, extra_head=''):
     nav = ''.join(f'<li><a href="{u}"{" aria-current=page" if (u == path or (u != "/" and path.startswith(u))) else ""}>{n}</a></li>' for n, u in NAV)
     canon = canonical or C['site_url'] + path
@@ -67,7 +77,8 @@ def layout(title, body, desc, path, canonical=None, extra_head=''):
 <p>Published by <a href="{C['publisher_url']}">{E(C['publisher'])}</a>. Informational, not legal advice.</p></div>
 <div><h4>Read</h4><ul><li><a href="/issues/">All issues</a></li><li><a href="/feed.xml">RSS feed</a></li><li><a href="/subscribe/">Subscribe free</a></li></ul></div>
 <div><h4>About</h4><ul><li><a href="/about/">About &amp; standards</a></li><li><a href="/sponsor/">Sponsor ({E(C['sponsor_price'])})</a></li></ul></div>
-<div><h4>Contact</h4><ul><li>Editor: <a href="mailto:{C['editor_email']}">{C['editor_email']}</a></li><li>Advertising: <a href="mailto:{C['advertise_email']}">{C['advertise_email']}</a></li><li><a href="{C['linkedin_url']}" target="_blank" rel="noopener">LinkedIn</a></li></ul></div>
+<div><h4>Contact</h4><ul><li>Editor: <a href="mailto:{C['editor_email']}">{C['editor_email']}</a></li><li>Advertising: <a href="mailto:{C['advertise_email']}">{C['advertise_email']}</a></li></ul></div>
+<div><h4>Follow</h4><ul class="foot-social">{SOCIAL}</ul></div>
 </div><div class="wrap copy">© {datetime.date.today().year} {E(C['publisher'])}</div></footer><script src="/assets/signup.js" defer></script></body></html>'''
 
 def cover(i, size='lg'):
