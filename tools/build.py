@@ -166,7 +166,7 @@ write('about/index.html', layout(f"About | {C['site_name']}", f'''<section class
 <li>We report what the law, the records and what officials say. We don't guess at how a rule applies to a specific association.</li>
 <li>Deadlines and dates come from the statute, the agency or the court, and we name the source for each one.</li>
 <li>Owners, boards, managers and developers are treated fairly. We present the facts and the officials' statements and let readers draw their own conclusions.</li>
-<li>We are nonpartisan, take no position on legislation or association disputes, and endorse no candidates.</li>
+<li>We are nonpartisan and take no position on legislation or association disputes.</li>
 <li>No invented numbers. If we can't source an assessment, budget or reserve figure, we don't print it.</li>
 <li>Corrections are made promptly and noted on the page.</li>
 <li>We use video only when we can confirm it is authentic and not AI-generated or manipulated.</li>
