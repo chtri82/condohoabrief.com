@@ -170,7 +170,8 @@ write('about/index.html', layout(f"About | {C['site_name']}", f'''<section class
 <li>No invented numbers. If we can't source an assessment, budget or reserve figure, we don't print it.</li>
 <li>Corrections are made promptly and noted on the page.</li>
 <li>We use video only when we can confirm it is authentic and not AI-generated or manipulated.</li>
-<li>Sponsor messages, including from management companies, law firms and vendors, are clearly labeled and kept separate from coverage.</li></ul>
+<li>Sponsor messages, including from management companies, law firms and vendors, are clearly labeled and kept separate from coverage.</li>
+<li>We welcome partnerships with Florida state agencies and the Legislature to serve as the go-to guide for condo and HOA owners, associations and businesses. Any such partnership will be disclosed on this page.</li></ul>
 <h2>Informational, not legal advice</h2><p>This newsletter summarizes Florida statutes and official sources in plain English. It is not legal advice and does not create an attorney-client relationship. Your declaration, bylaws and specific facts matter. For decisions affecting your association, consult a Florida-licensed attorney or the <a href="https://www2.myfloridalicense.com/condos-timeshares-mobile-homes/">DBPR Division of Condominiums, Timeshares and Mobile Homes</a>.</p>
 <h2>Who we are</h2><p>The Brief is published by <a href="{C['publisher_url']}">{E(C['publisher'])}</a>. Editor: {E(ISSUES[-1]["author"])}.</p>
 <h2>Contact</h2><p>Tips, questions and corrections: <a href="mailto:{C['editor_email']}">{C['editor_email']}</a>. Please include a link to the source.</p>
