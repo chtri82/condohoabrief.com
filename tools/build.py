@@ -80,7 +80,7 @@ def layout(title, body, desc, path, canonical=None, extra_head=''):
 <div><a class="brand brand-foot" href="/"><img src="/assets/img/mark.svg" width="38" height="38" alt=""><span><b>Florida Condo &amp; HOA</b><em>Brief</em></span></a>
 <p>Published by <a href="{C['publisher_url']}">{E(C['publisher'])}</a>. Informational, not legal advice.</p></div>
 <div><h4>Read</h4><ul><li><a href="/issues/">All issues</a></li><li><a href="/feed.xml">RSS feed</a></li><li><a href="/subscribe/">Subscribe free</a></li></ul></div>
-<div><h4>About</h4><ul><li><a href="/about/">About &amp; standards</a></li><li><a href="/sponsor/">Sponsor ({E(C['sponsor_price'])})</a></li></ul></div>
+<div><h4>About</h4><ul><li><a href="/about/">About &amp; standards</a></li><li><a href="/resources/dbpr-guides/">DBPR guides and forms</a></li><li><a href="/sponsor/">Sponsor ({E(C['sponsor_price'])})</a></li></ul></div>
 <div><h4>Contact</h4><ul><li>Editor: <a href="mailto:{C['editor_email']}">{C['editor_email']}</a></li><li>Advertising: <a href="mailto:{C['advertise_email']}">{C['advertise_email']}</a></li></ul></div>
 <div><h4>Follow</h4><ul class="foot-social">{SOCIAL}</ul></div>
 </div><div class="wrap copy">© {datetime.date.today().year} {E(C['publisher'])}</div></footer><script src="/assets/signup.js" defer></script></body></html>'''
@@ -191,7 +191,9 @@ items = ''.join(f'''<item><title>{E(i["title"])}</title><link>{C["site_url"]}{i[
 write('feed.xml', f'''<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>{E(C["site_name"])}</title><link>{C["site_url"]}/</link><atom:link href="{C["site_url"]}/feed.xml" rel="self" type="application/rss+xml"/><description>{E(C["tagline"])}</description><language>en-us</language>{items}</channel></rss>
 ''')
-urls = ['/', '/issues/', '/about/', '/sponsor/', '/subscribe/'] + [i['url'] for i in ISSUES]
+# DBPR guides page: hand-written HTML in content/dbpr-guides.html, wrapped in the site layout.
+write('resources/dbpr-guides/index.html', layout(f"DBPR guides and forms | {C['site_name']}", (ROOT/'content/dbpr-guides.html').read_text(), 'Official Florida DBPR condominium guides on budgets, meeting notices, elections, proxies, mediation and rule waivers.', '/resources/dbpr-guides/'))
+urls = ['/', '/issues/', '/about/', '/sponsor/', '/subscribe/', '/resources/dbpr-guides/'] + [i['url'] for i in ISSUES]
 write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + ''.join(f'<url><loc>{C["site_url"]}{u}</loc></url>' for u in urls) + '</urlset>\n')
 print(f'built {len(ISSUES)} issue(s)')
 log.info('built %d issue(s)', len(ISSUES))
