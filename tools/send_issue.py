@@ -7,13 +7,24 @@
 
 This script can only create DRAFTS. It never sends or schedules: a human reviews the draft in Brevo
 (Campaigns > Drafts), sends a test to themselves, and clicks Send. There is deliberately no send code here.
-The list, sender and reply-to come from config.json ("email"). Uses only the standard library."""
+The list, sender and reply-to come from config.json ("email"). Uses only the standard library.
+
+Email goes through Brevo only (list from config.json, list 3), never beehiiv.
+Logging: each Brevo call is logged with method, path and status to
+/workspace/logs/send_issue.log. The API key is never logged.
+"""
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from lp_logging import get_logger
+log = get_logger('send_issue')  # trace file: /workspace/logs/send_issue.log
 import json, re, os, sys, html, pathlib, datetime, urllib.request, urllib.error
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 C = json.load(open(ROOT/'config.json')); EM = C['email']
 API = 'https://api.brevo.com/v3'
 
 def brevo(method, path, data=None):
+    """Call the Brevo v3 API and return parsed JSON; exit with the error text on HTTP failure."""
+    log.info('Brevo %s %s', method, path)
     key = os.environ.get('BREVO_API_KEY')
     if not key: sys.exit('BREVO_API_KEY is not set')
     req = urllib.request.Request(API+path, method=method, data=json.dumps(data).encode() if data is not None else None,
@@ -22,6 +33,7 @@ def brevo(method, path, data=None):
         with urllib.request.urlopen(req, timeout=30) as r:
             t = r.read().decode(); return json.loads(t) if t else {}
     except urllib.error.HTTPError as e:
+        log.error('Brevo %s %s failed: HTTP %s', method, path, e.code)
         sys.exit(f'Brevo {method} {path} -> {e.code}: {e.read().decode()[:400]}')
 
 STYLES = {  # inline styles: most email clients ignore <style> blocks
@@ -78,6 +90,8 @@ def issue_by_slug(slug):
     sys.exit(f'no issue with slug {slug!r} in content/issues.json')
 
 def main(a):
+    """Command-line entry point; see the module docstring for usage."""
+    log.info('main args=%s', a)
     if '--sync-template' in a:
         issues = sorted(json.load(open(ROOT/'content/issues.json')), key=lambda i: i['date'])
         name, email = pick_sender()

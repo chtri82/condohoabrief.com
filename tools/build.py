@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 """Build the static Florida Condo & HOA Brief site from content/ + config.json.
-Usage: python3 tools/build.py   (add an issue: drop its HTML in content/issues/<slug>.html and an entry in content/issues.json)"""
+Usage: python3 tools/build.py   (add an issue: drop its HTML in content/issues/<slug>.html and an entry in content/issues.json)
+
+Every file written is logged (with byte count) to /workspace/logs/condo_build.log.
+"""
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from lp_logging import get_logger
+log = get_logger('condo_build')  # trace file: /workspace/logs/condo_build.log
 import json, re, html, os, pathlib, datetime, urllib.request, hashlib
 from email.utils import format_datetime
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -92,7 +99,9 @@ def subscribe_block(head='Get the Brief free in your inbox', text='Plain-English
     return f'<aside class="sub"><div><h3>{head}</h3><p>{text}</p></div><div class="sub-side">{signup_form(source)}<p class="sub-fine">Free. We email a confirmation link first. Unsubscribe anytime.</p></div></aside>'
 
 def write(path, s):
+    """Write page text to ROOT/<path>, creating folders as needed."""
     p = ROOT/path.lstrip('/'); p.parent.mkdir(parents=True, exist_ok=True); p.write_text(s)
+    log.debug('wrote %s (%d chars)', path, len(s))
 
 bodies = {}
 for i in ISSUES:
@@ -181,5 +190,6 @@ write('feed.xml', f'''<?xml version="1.0" encoding="UTF-8"?>
 urls = ['/', '/issues/', '/about/', '/sponsor/', '/subscribe/'] + [i['url'] for i in ISSUES]
 write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + ''.join(f'<url><loc>{C["site_url"]}{u}</loc></url>' for u in urls) + '</urlset>\n')
 print(f'built {len(ISSUES)} issue(s)')
+log.info('built %d issue(s)', len(ISSUES))
 
 write('robots.txt', f"User-agent: *\nAllow: /\nSitemap: {C['site_url']}/sitemap.xml\n")
