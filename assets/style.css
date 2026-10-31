@@ -71,3 +71,8 @@ nav ul{display:none;position:absolute;left:0;right:0;top:100%;background:#fff;fl
 .page-head .sub-form{max-width:36rem}.page-head .sub-form input[type=email]{border-color:var(--line);background:#fff}
 
 .foot-social a{display:inline-flex;gap:.45rem;align-items:center}.foot-social svg{flex:none}
+/* Special reports */
+.report .prose figure{margin:1.4rem 0}.report .prose figure img{width:100%;height:auto;border-radius:10px;display:block}
+.report .prose figcaption{font:.8rem/1.4 var(--sans);color:var(--muted);margin-top:.4rem}
+.report .prose .lede{font-size:1.25rem;line-height:1.6;font-weight:600;color:var(--navy)}
+.report .issue-head h1{font-size:clamp(1.8rem,4.5vw,2.9rem);line-height:1.12}
