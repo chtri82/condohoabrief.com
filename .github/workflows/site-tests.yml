@@ -1,0 +1,12 @@
+name: Site tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: sudo mkdir -p /workspace/logs && sudo chmod 777 /workspace/logs
+      - run: pip install pytest
+      - run: python -m pytest -q tests

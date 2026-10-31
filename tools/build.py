@@ -51,7 +51,7 @@ def excerpts(h):
         out.append((m.group(1), html.unescape(re.sub(r'<[^>]+>|^\d+\.\s*', '', m.group(2))), (t[:180].rsplit(' ', 1)[0] + '…') if len(t) > 180 else t))
     return out
 
-NAV = [('Home', '/'), ('Issues', '/issues/'), ('Resources', '/resources/dbpr-guides/'), ('About', '/about/'), ('Sponsor', '/sponsor/')]
+NAV = [('Home', '/'), ('Issues', '/issues/'), ('Special Reports', '/special-reports/'), ('Resources', '/resources/dbpr-guides/'), ('About', '/about/'), ('Sponsor', '/sponsor/')]
 _SOC=[('https://www.facebook.com/profile.php?id=61595986042172','fb','Facebook','Florida Condo & HOA Brief Facebook page'),
 ('https://www.linkedin.com/company/146762968/','li','LinkedIn','Florida Condo & HOA Brief LinkedIn page')]
 _ICO={'fb':'<path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.5c-1.5 0-1.96.93-1.96 1.89v2.26h3.32l-.53 3.5h-2.8V24C19.62 23.1 24 18.1 24 12.07z"/>',
@@ -79,7 +79,7 @@ def layout(title, body, desc, path, canonical=None, extra_head=''):
 <footer class="foot"><div class="wrap foot-grid">
 <div><a class="brand brand-foot" href="/"><img src="/assets/img/mark.svg" width="38" height="38" alt=""><span><b>Florida Condo &amp; HOA</b><em>Brief</em></span></a>
 <p>Published by <a href="{C['publisher_url']}">{E(C['publisher'])}</a>. Informational, not legal advice.</p></div>
-<div><h4>Read</h4><ul><li><a href="/issues/">All issues</a></li><li><a href="/feed.xml">RSS feed</a></li><li><a href="/subscribe/">Subscribe free</a></li></ul></div>
+<div><h4>Read</h4><ul><li><a href="/issues/">All issues</a></li><li><a href="/special-reports/">Special reports</a></li><li><a href="/feed.xml">RSS feed</a></li><li><a href="/subscribe/">Subscribe free</a></li></ul></div>
 <div><h4>About</h4><ul><li><a href="/about/">About &amp; standards</a></li><li><a href="/resources/dbpr-guides/">DBPR guides and forms</a></li><li><a href="/sponsor/">Sponsor ({E(C['sponsor_price'])})</a></li></ul></div>
 <div><h4>Contact</h4><ul><li>Editor: <a href="mailto:{C['editor_email']}">{C['editor_email']}</a></li><li>Advertising: <a href="mailto:{C['advertise_email']}">{C['advertise_email']}</a></li></ul></div>
 <div><h4>Follow</h4><ul class="foot-social">{SOCIAL}</ul></div>
@@ -193,7 +193,27 @@ write('feed.xml', f'''<?xml version="1.0" encoding="UTF-8"?>
 ''')
 # DBPR guides page: hand-written HTML in content/dbpr-guides.html, wrapped in the site layout.
 write('resources/dbpr-guides/index.html', layout(f"DBPR guides and forms | {C['site_name']}", (ROOT/'content/dbpr-guides.html').read_text(), 'Official Florida DBPR condominium guides on budgets, meeting notices, elections, proxies, mediation and rule waivers.', '/resources/dbpr-guides/'))
-urls = ['/', '/issues/', '/about/', '/sponsor/', '/subscribe/', '/resources/dbpr-guides/'] + [i['url'] for i in ISSUES]
+
+# Special reports: content/special-reports.json + content/special-reports/<slug>.html
+REPORTS = sorted(json.load(open(ROOT/'content/special-reports.json')), key=lambda r: r['date'], reverse=True)
+for r in REPORTS: r['url'] = f"/special-reports/{r['slug']}/"
+for r in REPORTS:
+    others = ''.join(f'<li><a href="{o["url"]}">{E(o["title"])}</a></li>' for o in REPORTS if o is not r)
+    body = f'''<article class="issue wrap report">
+<header class="issue-head"><p class="kicker"><a href="/special-reports/">Special Report</a></p><h1>{E(r["title"])}</h1><p class="dek">{E(r["dek"])}</p>
+<p class="byline">By {E(r["author"])}, Editor · <time datetime="{r["date"]}">{nice(r)}</time></p></header>
+<div class="issue-grid"><div class="prose">{(ROOT/'content/special-reports'/f"{r['slug']}.html").read_text()}</div>
+<aside class="issue-side"><div class="toc"><h4>More special reports</h4><ol>{others}</ol></div>{subscribe_block("Get the next report", "Free. Unsubscribe anytime.", "special-report")}</aside></div></article>'''
+    ld = json.dumps({"@context": "https://schema.org", "@type": "NewsArticle", "headline": r['title'], "description": r['dek'], "image": C['site_url'] + r['image'],
+        "datePublished": r['date'], "author": {"@type": "Person", "name": r['author']}, "publisher": {"@type": "Organization", "name": "Launchpad Digital L.L.C."},
+        "mainEntityOfPage": C['site_url'] + r['url']}).replace('</', '<\\/')
+    xh = f'<meta property="og:type" content="article"><meta property="og:image" content="{C["site_url"]}{r["image"]}"><script type="application/ld+json">{ld}</script>'
+    write(f"special-reports/{r['slug']}/index.html", layout(f"{r['title']} | {C['site_name']}", body, r['dek'], r['url'], extra_head=xh))
+rcards = ''.join(f'''<article class="arch-item"><a href="{r["url"]}"><img class="cover-img" src="{r["image"]}" alt="{E(r["image_alt"])}"></a><div><p class="kicker">Special Report · <time datetime="{r["date"]}">{nice(r)}</time></p>
+<h2><a href="{r["url"]}">{E(r["title"])}</a></h2><p class="dek">{E(r["dek"])}</p></div></article>''' for r in REPORTS)
+write('special-reports/index.html', layout(f"Special Reports | {C['site_name']}", f'''<section class="page-head"><div class="wrap"><p class="kicker">Special Reports</p><h1>Special Reports</h1><p class="dek">In-depth reporting on the biggest Florida condo and HOA fights, built on statutes, court records and credited reporting.</p></div></section>
+<section class="wrap arch">{rcards}</section><section class="wrap">{subscribe_block()}</section>''', 'In-depth special reports from the Florida Condo & HOA Brief.', '/special-reports/'))
+urls = ['/', '/issues/', '/special-reports/', '/about/', '/sponsor/', '/subscribe/', '/resources/dbpr-guides/'] + [i['url'] for i in ISSUES] + [r['url'] for r in REPORTS]
 write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + ''.join(f'<url><loc>{C["site_url"]}{u}</loc></url>' for u in urls) + '</urlset>\n')
 print(f'built {len(ISSUES)} issue(s)')
 log.info('built %d issue(s)', len(ISSUES))
